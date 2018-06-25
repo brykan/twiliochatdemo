@@ -147,7 +147,7 @@ public class MainChatFragment extends Fragment implements ChannelListener {
     if (messageText.length() == 0) {
       return;
     }
-    Message newMessage = this.messagesObject.createMessage(messageText);
+    Message.Options newMessage = Message.options().withBody(messageText);
     this.messagesObject.sendMessage(newMessage, null);
     clearTextInput();
   }
@@ -171,43 +171,47 @@ public class MainChatFragment extends Fragment implements ChannelListener {
   }
 
   @Override
-  public void onMessageAdd(Message message) {
-    messageAdapter.addMessage(message);
+  public void onMessageAdded(Message message) {
+
   }
 
   @Override
-  public void onMemberJoin(Member member) {
-    StatusMessage statusMessage = new JoinedStatusMessage(member.getUserInfo().getIdentity());
-    this.messageAdapter.addStatusMessage(statusMessage);
+  public void onMessageUpdated(Message message, Message.UpdateReason updateReason) {
+
   }
 
   @Override
-  public void onMemberDelete(Member member) {
-    StatusMessage statusMessage = new LeftStatusMessage(member.getUserInfo().getIdentity());
-    this.messageAdapter.addStatusMessage(statusMessage);
+  public void onMessageDeleted(Message message) {
+
   }
 
   @Override
-  public void onMessageChange(Message message) {
+  public void onMemberAdded(Member member) {
+
   }
 
   @Override
-  public void onMessageDelete(Message message) {
+  public void onMemberUpdated(Member member, Member.UpdateReason updateReason) {
+
   }
 
   @Override
-  public void onMemberChange(Member member) {
+  public void onMemberDeleted(Member member) {
+
   }
 
   @Override
-  public void onTypingStarted(Member member) {
+  public void onTypingStarted(Channel channel, Member member) {
+
   }
 
   @Override
-  public void onTypingEnded(Member member) {
+  public void onTypingEnded(Channel channel, Member member) {
+
   }
 
   @Override
-  public void onSynchronizationChange(Channel channel) {
+  public void onSynchronizationChanged(Channel channel) {
+
   }
 }

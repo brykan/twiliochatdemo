@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.twilio.twiliochat.R;
 import com.twilio.twiliochat.application.AlertDialogHandler;
 import com.twilio.twiliochat.application.SessionManager;
+import com.twilio.twiliochat.application.TempUser;
 import com.twilio.twiliochat.application.TwilioChatApplication;
 import com.twilio.twiliochat.chat.ChatClientManager;
 import com.twilio.twiliochat.chat.MainChatActivity;
@@ -26,10 +27,13 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
   final Context context = this;
   private final String USERNAME_FORM_FIELD = "username";
+  private final String URL_FORM_FIELD = "url";
+  private final String PASSWORD_FORM_FIELD = "password";
   private ProgressDialog progressDialog;
   private Button loginButton;
   private EditText usernameEditText;
-
+  private EditText urlEditText;
+  private EditText passwordEditText;
   private ChatClientManager clientManager;
 
   @Override
@@ -44,7 +48,9 @@ public class LoginActivity extends AppCompatActivity {
   private void setUIComponents() {
     loginButton = (Button) findViewById(R.id.buttonLogin);
     usernameEditText = (EditText) findViewById(R.id.editTextUsername);
-
+    urlEditText = (EditText) findViewById(R.id.editTextUrl);
+    passwordEditText = (EditText) findViewById(R.id.editTextPassword);
+    urlEditText.setText(SessionManager.getInstance().getUrl());
     setUpListeners();
   }
 
@@ -59,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
       @Override
       public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int viewId = v.getImeActionId();
-        if (viewId == 100) {
+        if (viewId == 300) {
           login();
           return true;
         }
@@ -77,17 +83,32 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     startStatusDialogWithMessage(getStringResource(R.string.login_user_progress_message));
-    SessionManager.getInstance().createLoginSession(formInput.get(USERNAME_FORM_FIELD));
-    initializeChatClient();
+    SessionManager.getInstance().createLoginSession(formInput.get(USERNAME_FORM_FIELD),formInput.get(URL_FORM_FIELD),formInput.get(PASSWORD_FORM_FIELD), new TaskCompletionListener<String,String>(){
+        @Override
+        public void onSuccess(String token){
+            SessionManager.getInstance().setToken(token);
+            initializeChatClient();
+        }
+
+        @Override
+        public void onError(String s) {
+            showAlertWithMessage(s);
+
+        }
+
+    });
   }
 
   private Map<String, String> getFormInput() {
     String username = usernameEditText.getText().toString();
-
+    String password = passwordEditText.getText().toString();
+    String url = urlEditText.getText().toString();
     Map<String, String> formInput = new HashMap<>();
 
-    if (username.length() > 0) {
+    if (username.length() > 0 && password.length() > 0 && url.length() > 0) {
       formInput.put(USERNAME_FORM_FIELD, username);
+      formInput.put(URL_FORM_FIELD,url);
+      formInput.put(PASSWORD_FORM_FIELD,password);
     }
     return formInput;
   }
